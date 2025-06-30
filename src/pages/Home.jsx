@@ -96,7 +96,12 @@ const Home = () => {
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 Elevate Your
-                <span className="block gradient-text">Digital Presence</span>
+                <span className="block gradient-text font-extrabold text-shadow-lg" style={{
+                  background: 'linear-gradient(90deg, #7f1d1d 0%, #a21caf 50%, #2563eb 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+                }}>Digital Presence</span>
               </motion.h1>
               
               <motion.p
@@ -124,7 +129,7 @@ const Home = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button asChild variant="outline" size="lg" className="relative overflow-hidden border-2 border-white/30 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent hover:text-white px-8 py-3 text-lg group">
+                  <Button asChild size="lg" className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white font-bold border-0 hover:from-purple-700 hover:to-red-600 px-8 py-3 text-lg group shadow-lg">
                     <Link to="/services" className="relative z-10 flex items-center">
                       <Sparkles className="mr-2 h-5 w-5 group-hover:animate-spin" />
                       Explore Services
