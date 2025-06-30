@@ -14,6 +14,8 @@ import PrivacyPolicy from '@/pages/PrivacyPolicy';
 import PaymentsPolicy from '@/pages/PaymentsPolicy';
 import RefundPolicy from '@/pages/RefundPolicy';
 import TermsConditions from '@/pages/TermsConditions';
+import PaymentSuccess from '@/pages/PaymentSuccess';
+import PaymentFailure from '@/pages/PaymentFailure';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <Route path="/payments-policy" element={<PaymentsPolicy />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-failure" element={<PaymentFailure />} />
           </Routes>
         </main>
         <Footer />

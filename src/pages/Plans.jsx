@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -7,9 +6,15 @@ import { Check, Star, ArrowRight, CreditCard, Smartphone, Building2, Wallet } fr
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 
+const PAYU_MERCHANT_KEY = 'XG67ge';
+const PAYU_MERCHANT_SALT = 'tJAUeCbL9apmZOaGPBzrxl8LtmPYsXW4'; // For demo only, do NOT expose in production
+const PAYU_BASE_URL = 'https://secure.payu.in/_payment'; // Use PayU test URL for sandbox
+
 const Plans = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const payuFormRef = useRef(null);
+  const [payuData, setPayuData] = useState(null);
 
   const plans = [
     {
@@ -110,8 +115,33 @@ const Plans = () => {
   };
 
   const handlePayNow = (plan) => {
-    setSelectedPlan(plan);
-    setShowPaymentOptions(true);
+    // Prepare PayU form data
+    const txnid = 'Txn' + Date.now();
+    const amount = plan.price.replace(/[^\d.]/g, '');
+    const productinfo = plan.name;
+    const firstname = 'Customer';
+    const email = 'customer@email.com';
+    const phone = '9999999999';
+    // For demo, hash is not secure. In production, generate hash on server.
+    const hashString = `${PAYU_MERCHANT_KEY}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|||||||||||${PAYU_MERCHANT_SALT}`;
+    // Simple SHA512 hash (for demo, use a backend in production)
+    window.crypto.subtle.digest('SHA-512', new TextEncoder().encode(hashString)).then(buffer => {
+      const hashArray = Array.from(new Uint8Array(buffer));
+      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      setPayuData({
+        key: PAYU_MERCHANT_KEY,
+        txnid,
+        amount,
+        productinfo,
+        firstname,
+        email,
+        phone,
+        surl: window.location.origin + '/payment-success',
+        furl: window.location.origin + '/payment-failure',
+        hash
+      });
+      setTimeout(() => payuFormRef.current && payuFormRef.current.submit(), 500);
+    });
   };
 
   const handlePaymentMethod = (method, plan) => {
@@ -207,7 +237,7 @@ const Plans = () => {
                     <Button
                       onClick={() => handleGetQuote(plan.name)}
                       variant="outline"
-                      className="w-full border-white/30 text-white hover:bg-white/10 font-semibold py-3"
+                      className="w-full border-gray-400 bg-white text-gray-900 hover:bg-gray-100 font-semibold py-3"
                     >
                       Get Custom Quote
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -261,12 +291,28 @@ const Plans = () => {
               <Button
                 onClick={() => setShowPaymentOptions(false)}
                 variant="outline"
-                className="w-full border-white/30 text-white hover:bg-white/10"
+                className="w-full border-gray-400 bg-white text-gray-900 hover:bg-gray-100"
               >
                 Cancel
               </Button>
             </motion.div>
           </motion.div>
+        )}
+
+        {/* PayU Payment Form (hidden) */}
+        {payuData && (
+          <form ref={payuFormRef} action={PAYU_BASE_URL} method="post" style={{ display: 'none' }}>
+            <input type="hidden" name="key" value={payuData.key} />
+            <input type="hidden" name="txnid" value={payuData.txnid} />
+            <input type="hidden" name="amount" value={payuData.amount} />
+            <input type="hidden" name="productinfo" value={payuData.productinfo} />
+            <input type="hidden" name="firstname" value={payuData.firstname} />
+            <input type="hidden" name="email" value={payuData.email} />
+            <input type="hidden" name="phone" value={payuData.phone} />
+            <input type="hidden" name="surl" value={payuData.surl} />
+            <input type="hidden" name="furl" value={payuData.furl} />
+            <input type="hidden" name="hash" value={payuData.hash} />
+          </form>
         )}
 
         {/* Additional Info */}

@@ -1,10 +1,45 @@
-
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Users, Award, TrendingUp, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
+
+const PAYU_MERCHANT_KEY = 'XG67ge';
+const PAYU_MERCHANT_SALT = 'tJAUeCbL9apmZOaGPBzrxl8LtmPYsXW4'; // For demo only, do NOT expose in production
+const PAYU_BASE_URL = 'https://secure.payu.in/_payment'; // Use PayU test URL for sandbox
+
+function handlePayNowBooking(setPayuData, payuFormRef, toast) {
+  const txnid = 'Txn' + Date.now();
+  const amount = '999';
+  const productinfo = 'Service Booking (Non-Refundable)';
+  const firstname = 'Customer';
+  const email = 'customer@email.com';
+  const phone = '9999999999';
+  const hashString = `${PAYU_MERCHANT_KEY}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|||||||||||${PAYU_MERCHANT_SALT}`;
+  window.crypto.subtle.digest('SHA-512', new TextEncoder().encode(hashString)).then(buffer => {
+    const hashArray = Array.from(new Uint8Array(buffer));
+    const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    setPayuData({
+      key: PAYU_MERCHANT_KEY,
+      txnid,
+      amount,
+      productinfo,
+      firstname,
+      email,
+      phone,
+      surl: window.location.origin + '/payment-success',
+      furl: window.location.origin + '/payment-failure',
+      hash
+    });
+    toast({
+      title: 'Booking Initiated!',
+      description: 'Thank you for booking. We will connect you shortly.',
+    });
+    setTimeout(() => payuFormRef.current && payuFormRef.current.submit(), 500);
+  });
+}
 
 const Home = () => {
   const features = [
@@ -31,6 +66,9 @@ const Home = () => {
     { number: '98%', label: 'Client Satisfaction' },
     { number: '5+', label: 'Years Experience' },
   ];
+
+  const payuFormRef = useRef(null);
+  const [payuData, setPayuData] = useState(null);
 
   return (
     <>
@@ -100,7 +138,29 @@ const Home = () => {
                     </Link>
                   </Button>
                 </motion.div>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg"
+                  onClick={() => handlePayNowBooking(setPayuData, payuFormRef, toast)}
+                >
+                  Book Now for ₹999 (Non-Refundable)
+                </Button>
               </motion.div>
+              {/* PayU Payment Form (hidden) for Booking Button */}
+              {payuData && (
+                <form ref={payuFormRef} action={PAYU_BASE_URL} method="post" style={{ display: 'none' }}>
+                  <input type="hidden" name="key" value={payuData.key} />
+                  <input type="hidden" name="txnid" value={payuData.txnid} />
+                  <input type="hidden" name="amount" value={payuData.amount} />
+                  <input type="hidden" name="productinfo" value={payuData.productinfo} />
+                  <input type="hidden" name="firstname" value={payuData.firstname} />
+                  <input type="hidden" name="email" value={payuData.email} />
+                  <input type="hidden" name="phone" value={payuData.phone} />
+                  <input type="hidden" name="surl" value={payuData.surl} />
+                  <input type="hidden" name="furl" value={payuData.furl} />
+                  <input type="hidden" name="hash" value={payuData.hash} />
+                </form>
+              )}
             </motion.div>
 
             {/* Floating Elements */}
