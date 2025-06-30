@@ -96,12 +96,17 @@ const Home = () => {
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 Elevate Your
-                <span className="block gradient-text font-extrabold text-shadow-lg" style={{
-                  background: 'linear-gradient(90deg, #7f1d1d 0%, #a21caf 50%, #2563eb 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.5)'
-                }}>Digital Presence</span>
+                <span
+                  className="block font-extrabold text-transparent bg-clip-text text-5xl md:text-6xl lg:text-7xl"
+                  style={{
+                    background: 'linear-gradient(90deg, #6366f1 0%, #a21caf 50%, #f59e42 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 2px 12px rgba(40,40,80,0.25)'
+                  }}
+                >
+                  Digital Presence
+                </span>
               </motion.h1>
               
               <motion.p
@@ -129,7 +134,7 @@ const Home = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button asChild size="lg" className="relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white font-bold border-0 hover:from-purple-700 hover:to-red-600 px-8 py-3 text-lg group shadow-lg">
+                  <Button asChild variant="outline" size="lg" className="relative overflow-hidden border-2 border-white/30 text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent hover:text-white px-8 py-3 text-lg group">
                     <Link to="/services" className="relative z-10 flex items-center">
                       <Sparkles className="mr-2 h-5 w-5 group-hover:animate-spin" />
                       Explore Services
@@ -145,11 +150,10 @@ const Home = () => {
                 </motion.div>
                 <Button
                   size="lg"
-                  className="relative bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold px-10 py-4 text-lg rounded-full shadow-xl border-0 transition-all duration-300 focus:ring-4 focus:ring-pink-200 focus:outline-none group"
+                  className="bg-gradient-to-r from-pink-500 to-red-500 hover:opacity-90 text-white font-semibold px-8 py-3 text-lg rounded-xl shadow-lg"
                   onClick={() => handlePayNowBooking(setPayuData, payuFormRef, toast)}
                 >
-                  <span className="inline-block align-middle">Book Now for ₹999</span>
-                  <span className="absolute inset-0 rounded-full border-4 border-white opacity-0 group-focus:opacity-100 transition-opacity duration-300 pointer-events-none"></span>
+                  Book Now for ₹999 (Non-Refundable)
                 </Button>
               </motion.div>
               {/* PayU Payment Form (hidden) for Booking Button */}
